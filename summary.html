@@ -108,79 +108,80 @@
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let selectedNames = JSON.parse(localStorage.getItem('selectedPersonnel')) || [];
-            let personnelData = JSON.parse(localStorage.getItem('personnel')) || {};
-            let selectedDate = localStorage.getItem('selectedDate') || "No date selected";
-            let leaveEntries = JSON.parse(localStorage.getItem('leaveEntries')) || [];
+       document.addEventListener("DOMContentLoaded", function() {
+    let selectedNames = JSON.parse(localStorage.getItem('selectedPersonnel')) || [];
+    let personnelData = JSON.parse(localStorage.getItem('personnel')) || {};
+    let selectedDate = localStorage.getItem('selectedDate') || "No date selected";
+    let leaveEntries = JSON.parse(localStorage.getItem('leaveEntries')) || [];
 
-            // Set Date
-            document.getElementById("selectedDate").textContent = "Date: " + selectedDate;
+    // Set Date
+    document.getElementById("selectedDate").textContent = "Date: " + selectedDate;
 
-            // **Total Strength Calculation (All names in the personnel list)**
-            let totalStrength = Object.keys(personnelData).length;
-            document.getElementById("totalStrength").textContent = totalStrength;
+    // Ensure `Total Strength` updates correctly
+    let totalStrength = Object.keys(personnelData).length;
+    document.getElementById("totalStrength").textContent = totalStrength;
 
-            let poCount = 0, astCount = 0, nonAstCount = 0;
-            let skillsetMap = {};
-            let leaveSummaryMap = { local: [], overseas: [], "on-course": [], others: [] };
+    let poCount = 0, astCount = 0, nonAstCount = 0;
+    let skillsetMap = {};
+    let leaveSummaryMap = { local: [], overseas: [], "non-ops": [], others: [] };
 
-            selectedNames.forEach(name => {
-                let skillset = personnelData[name] ? personnelData[name].split(", ") : [];
-                if (skillset.includes("PO")) poCount++;
-                if (skillset.includes("AST")) astCount++;
-                if (!skillset.includes("AST") && skillset.includes("PO")) nonAstCount++;
+    selectedNames.forEach(name => {
+        let skillset = personnelData[name] ? personnelData[name].split(", ") : [];
+        if (skillset.includes("PO")) poCount++;
+        if (skillset.includes("AST")) astCount++;
+        if (!skillset.includes("AST") && skillset.includes("PO")) nonAstCount++;
 
-                skillset.forEach(skill => {
-                    if (!skillsetMap[skill]) {
-                        skillsetMap[skill] = [];
-                    }
-                    skillsetMap[skill].push(name);
-                });
-            });
-
-            document.getElementById("totalPO").textContent = poCount;
-            document.getElementById("totalAST").textContent = astCount;
-            document.getElementById("nonAstStrength").textContent = nonAstCount;
-
-            // **Leave Summary Calculation**
-            leaveEntries.forEach(entry => {
-                if (entry.type === "others") {
-                    leaveSummaryMap.others.push(entry.name);
-                } else {
-                    leaveSummaryMap[entry.type].push(entry.name);
-                }
-            });
-
-            let leaveSummaryDiv = document.getElementById("leaveSummary");
-            leaveSummaryDiv.innerHTML = "";
-            Object.keys(leaveSummaryMap).forEach(type => {
-                if (leaveSummaryMap[type].length > 0) {
-                    let leaveEntry = document.createElement("p");
-                    leaveEntry.innerHTML = `<strong>${type.charAt(0).toUpperCase() + type.slice(1)} Leave (${leaveSummaryMap[type].length}):</strong> ${leaveSummaryMap[type].join(", ")}`;
-                    leaveSummaryDiv.appendChild(leaveEntry);
-                }
-            });
-
-            // **Skillset Summary Calculation**
-            let skillsetSummaryDiv = document.getElementById("skillsetSummary");
-            let skillsetTypes = ["CL Package", "HK69", "PAVA", "Marking", "PO MOE", "TAV Driver", "Rider", "Pillion"];
-            skillsetSummaryDiv.innerHTML = "";
-
-            skillsetTypes.forEach(skill => {
-                if (skillsetMap[skill]) {
-                    let skillEntry = document.createElement("p");
-                    skillEntry.innerHTML = `<strong>${skill} (${skillsetMap[skill].length}):</strong> ${skillsetMap[skill].join(", ")}`;
-                    skillsetSummaryDiv.appendChild(skillEntry);
-                }
-            });
-
-            // **On-Duty Strength**
-            document.getElementById("emStrength").textContent = selectedNames.length;
-            document.getElementById("poStrength").textContent = poCount;
-            document.getElementById("astStrength").textContent = astCount;
-            document.getElementById("nonOpsStrength").textContent = leaveSummaryMap["non-ops"] ? leaveSummaryMap["non-ops"].length : 0;
+        skillset.forEach(skill => {
+            if (!skillsetMap[skill]) {
+                skillsetMap[skill] = [];
+            }
+            skillsetMap[skill].push(name);
         });
+    });
+
+    document.getElementById("totalPO").textContent = poCount;
+    document.getElementById("totalAST").textContent = astCount;
+    document.getElementById("nonAstStrength").textContent = nonAstCount;
+
+    // **Leave Summary Calculation**
+    leaveEntries.forEach(entry => {
+        if (entry.type === "others") {
+            leaveSummaryMap.others.push(entry.name);
+        } else {
+            leaveSummaryMap[entry.type].push(entry.name);
+        }
+    });
+
+    let leaveSummaryDiv = document.getElementById("leaveSummary");
+    leaveSummaryDiv.innerHTML = "";
+    Object.keys(leaveSummaryMap).forEach(type => {
+        if (leaveSummaryMap[type].length > 0) {
+            let leaveEntry = document.createElement("p");
+            leaveEntry.innerHTML = `<strong>${type.charAt(0).toUpperCase() + type.slice(1)} Leave (${leaveSummaryMap[type].length}):</strong> ${leaveSummaryMap[type].join(", ")}`;
+            leaveSummaryDiv.appendChild(leaveEntry);
+        }
+    });
+
+    // **Skillset Summary Calculation**
+    let skillsetSummaryDiv = document.getElementById("skillsetSummary");
+    let skillsetTypes = ["CL Package", "HK69", "PAVA", "Marking", "PO MOE", "TAV Driver", "Rider", "Pillion"];
+    skillsetSummaryDiv.innerHTML = "";
+
+    skillsetTypes.forEach(skill => {
+        if (skillsetMap[skill]) {
+            let skillEntry = document.createElement("p");
+            skillEntry.innerHTML = `<strong>${skill} (${skillsetMap[skill].length}):</strong> ${skillsetMap[skill].join(", ")}`;
+            skillsetSummaryDiv.appendChild(skillEntry);
+        }
+    });
+
+    // **On-Duty Strength**
+    document.getElementById("emStrength").textContent = selectedNames.length;
+    document.getElementById("poStrength").textContent = poCount;
+    document.getElementById("astStrength").textContent = astCount;
+    document.getElementById("nonOpsStrength").textContent = leaveSummaryMap["non-ops"] ? leaveSummaryMap["non-ops"].length : 0;
+});
+
 
         function goBack() {
             window.location.href = "index.html";
