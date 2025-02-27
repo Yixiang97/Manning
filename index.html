@@ -1,127 +1,177 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Data Display with Hidden Skillsets</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Interactive Data Display</title>
   <style>
+    /* General Dark Mode Theme */
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
+      font-family: 'Poppins', sans-serif;
+      background-color: #121212;
+      color: #E0E0E0;
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #FFFFFF;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #1E1E1E;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .dropdown-container {
       display: flex;
-      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
       align-items: center;
       justify-content: center;
-      height: 100vh;
     }
 
-    header {
-      background-color: #4CAF50;
-      color: white;
-      width: 100%;
-      text-align: center;
-      padding: 20px 0;
+    /* Dark Mode Dropdown Styling */
+    select, input[type="text"] {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background-color: #333;
+      color: #FFF;
+      width: 180px;
+      font-size: 14px;
+      cursor: pointer;
     }
 
-    main {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
+    select:focus, input:focus {
+      outline: none;
+      border-color: #4CAF50;
     }
 
+    /* Button Styling */
     button {
-      padding: 10px 20px;
-      margin: 5px;
+      padding: 10px 15px;
+      font-size: 14px;
       background-color: #4CAF50;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     button:hover {
       background-color: #45a049;
     }
 
-    #controls {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 10px;
+    /* Remove Button */
+    .remove-btn {
+      background-color: #FF5252;
     }
 
+    .remove-btn:hover {
+      background-color: #E53935;
+    }
+
+    /* Name List */
     .list-container {
-      width: 90%;
-      max-width: 600px;
-      max-height: 400px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      padding: 10px;
-      background-color: #fff;
-      border-radius: 5px;
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #444;
+      padding: 15px;
+      background-color: #222;
+      border-radius: 10px;
+      margin-top: 15px;
     }
 
-    #nameList {
+    ul {
       list-style-type: none;
       padding: 0;
+      margin: 0;
     }
 
     .name-item {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      cursor: pointer;
       gap: 10px;
+      padding: 8px;
+      font-size: 14px;
     }
 
-    .name-item:last-child {
-      border-bottom: none;
+    /* Checkbox Styling */
+    input[type="checkbox"] {
+      accent-color: #4CAF50;
+      transform: scale(1.2);
+      cursor: pointer;
     }
 
-    .name-item:hover {
-      background-color: #f0f0f0;
+    /* Control Buttons */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .name-item input[type="checkbox"] {
-      pointer-events: none;
+    .go-btn {
+      background-color: #007BFF;
+    }
+
+    .go-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Hide Other Reason by Default */
+    .other-reason {
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Interactive Data Display with Hidden Skillsets</h1>
-  </header>
+  <div class="container">
+    <h2>Select Date & Leave Status</h2>
+    <input type="date" id="datePicker" style="padding: 10px; background: #333; color: #FFF; border-radius: 6px; border: 1px solid #555; font-size: 14px;">
 
-  <main>
-    <h2>Select Names</h2>
-    <div id="controls">
-      <button onclick="toggleSelectAll()">Select All</button>
-      <button onclick="toggleEdit()">Edit</button>
-      <button onclick="navigateToAdd()">Add</button>
+    <div id="leaveEntries">
+      <div class="dropdown-container">
+        <select class="leaveSelector" onchange="updateLeaveList()">
+          <option value="">Select Name for Leave</option>
+        </select>
+        <select class="leaveType" onchange="toggleOtherReason(this)">
+          <option value="local">Local Leave</option>
+          <option value="overseas">Overseas Leave</option>
+          <option value="non-ops">Non-Ops</option>
+          <option value="others">Others</option>
+        </select>
+        <input type="text" class="other-reason" placeholder="Specify reason" style="display: none;">
+        <button onclick="addLeaveEntry()">Add</button>
+      </div>
     </div>
 
+    <h2>Available Names</h2>
     <div class="list-container">
       <ul id="nameList"></ul>
     </div>
 
-    <button onclick="proceedToSummary()">GO</button>
-  </main>
+    <!-- Control Buttons -->
+    <div class="controls">
+      <button onclick="toggleSelectAll()">Select All</button>
+      <button class="go-btn" onclick="proceedToSummary()">GO</button>
+    </div>
+
+  </div>
 
   <script>
     let personnel = {
-       "LONG JIEH LIANG": "Pillion, OC, PO, AST",
+         "LONG JIEH LIANG": "Pillion, OC, PO, AST",
   "MUHAMAD RIZAL BIN RIDWAN": "DOC, PO, AST",
   "RAYMOND NG TECK MIN": "CL Package, Taser, PO, AST",
   "NOOR HALEEM BIN MOHD HANIFA": "CL Package, Rider, Pillion, PO, AST",
@@ -169,36 +219,94 @@
   "DAYAN TAN JIE AN": "PO"
     };
 
-    function toggleSelectAll() {
-      let allChecked = document.querySelectorAll('.nameCheckbox:not(:checked)').length === 0;
-      document.querySelectorAll('.nameCheckbox').forEach(checkbox => checkbox.checked = !allChecked);
+    function getSelectedNames() {
+      return Array.from(document.querySelectorAll('.leaveSelector'))
+        .map(select => select.value)
+        .filter(value => value !== "");
     }
 
-    function proceedToSummary() {
-      let selectedNames = Array.from(document.querySelectorAll('.nameCheckbox:checked'))
-        .map(cb => cb.value);
-      localStorage.setItem('selectedPersonnel', JSON.stringify(selectedNames));
-      window.location.href = 'summary.html';
+    function populateDropdown(selector) {
+      let selectedNames = getSelectedNames();
+      let currentValue = selector.value;
+
+      selector.innerHTML = '<option value="">Select Name for Leave</option>';
+
+      Object.keys(personnel).forEach(name => {
+        let option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+
+        if (selectedNames.includes(name) && name !== currentValue) {
+          option.disabled = true;
+        }
+
+        selector.appendChild(option);
+      });
+
+      selector.value = currentValue;
     }
 
+    // Populate name list (checkbox list)
     function populateNameList() {
-      let nameListDiv = document.getElementById('nameList');
-      nameListDiv.innerHTML = Object.entries(personnel).map(([name, skillset]) => `
-        <li class="name-item" onclick="toggleCheckbox('${name}')">
-          <input type="checkbox" id="checkbox-${name}" value="${name}" class="nameCheckbox" />
-          <span>${name}</span>
-        </li>
-      `).join('');
+      let nameListDiv = document.getElementById("nameList");
+      let selectedNames = getSelectedNames();
+
+      nameListDiv.innerHTML = Object.keys(personnel)
+        .filter(name => !selectedNames.includes(name)) 
+        .map(name => `
+          <li class="name-item">
+            <input type="checkbox" value="${name}" class="nameCheckbox">
+            <span>${name}</span>
+          </li>
+        `).join('');
     }
 
-    function toggleCheckbox(name) {
-      let checkbox = document.getElementById(`checkbox-${name}`);
-      if (checkbox) {
-        checkbox.checked = !checkbox.checked;
-      }
+    // Function to add a new leave row
+    function addLeaveEntry() {
+      let leaveEntries = document.getElementById('leaveEntries');
+      let newEntry = document.createElement('div');
+      newEntry.classList.add('dropdown-container');
+
+      newEntry.innerHTML = `
+        <select class="leaveSelector" onchange="updateLeaveList()">
+          <option value="">Select Name for Leave</option>
+        </select>
+        <select class="leaveType" onchange="toggleOtherReason(this)">
+          <option value="local">Local Leave</option>
+          <option value="overseas">Overseas Leave</option>
+          <option value="non-ops">Non-Ops</option>
+          <option value="others">Others</option>
+        </select>
+        <input type="text" class="other-reason" placeholder="Specify reason" style="display: none;">
+        <button class="remove-btn" onclick="removeLeaveEntry(this)">Remove</button>
+      `;
+
+      leaveEntries.appendChild(newEntry);
+      populateDropdown(newEntry.querySelector(".leaveSelector"));
     }
 
-    window.onload = populateNameList;
+    function updateLeaveList() {
+      document.querySelectorAll('.leaveSelector').forEach(dropdown => populateDropdown(dropdown));
+      populateNameList();
+    }
+
+    function removeLeaveEntry(button) {
+      button.parentElement.remove();
+      updateLeaveList();
+    }
+
+    function toggleSelectAll() {
+      let checkboxes = document.querySelectorAll('.nameCheckbox');
+      let allChecked = [...checkboxes].every(cb => cb.checked);
+      checkboxes.forEach(cb => cb.checked = !allChecked);
+    }
+
+    window.onload = function () {
+      let firstDropdown = document.querySelector(".leaveSelector");
+      populateDropdown(firstDropdown);
+      populateNameList();
+    };
   </script>
+
 </body>
 </html>
