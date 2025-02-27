@@ -114,8 +114,12 @@
             let selectedDate = localStorage.getItem('selectedDate') || "No date selected";
             let leaveEntries = JSON.parse(localStorage.getItem('leaveEntries')) || [];
 
+            // Set Date
             document.getElementById("selectedDate").textContent = "Date: " + selectedDate;
-            document.getElementById("totalStrength").textContent = Object.keys(personnelData).length;
+
+            // **Total Strength Calculation (All names in the personnel list)**
+            let totalStrength = Object.keys(personnelData).length;
+            document.getElementById("totalStrength").textContent = totalStrength;
 
             let poCount = 0, astCount = 0, nonAstCount = 0;
             let skillsetMap = {};
@@ -139,7 +143,7 @@
             document.getElementById("totalAST").textContent = astCount;
             document.getElementById("nonAstStrength").textContent = nonAstCount;
 
-            // Leave Summary
+            // **Leave Summary Calculation**
             leaveEntries.forEach(entry => {
                 if (entry.type === "others") {
                     leaveSummaryMap.others.push(entry.name);
@@ -158,7 +162,7 @@
                 }
             });
 
-            // Skillset Summary
+            // **Skillset Summary Calculation**
             let skillsetSummaryDiv = document.getElementById("skillsetSummary");
             let skillsetTypes = ["CL Package", "HK69", "PAVA", "Marking", "PO MOE", "TAV Driver", "Rider", "Pillion"];
             skillsetSummaryDiv.innerHTML = "";
@@ -171,7 +175,7 @@
                 }
             });
 
-            // On-Duty Strength
+            // **On-Duty Strength**
             document.getElementById("emStrength").textContent = selectedNames.length;
             document.getElementById("poStrength").textContent = poCount;
             document.getElementById("astStrength").textContent = astCount;
