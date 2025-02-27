@@ -165,6 +165,7 @@
     <div class="controls">
       <button onclick="toggleSelectAll()">Select All</button>
       <button class="go-btn" onclick="proceedToSummary()">GO</button>
+      <button class="edit-btn" onclick="editSkillset()">Edit Skillset</button>
 
     </div>
 
@@ -295,6 +296,29 @@
       button.parentElement.remove();
       updateLeaveList();
     }
+    function editSkillset() {
+    let selectedNames = Array.from(document.querySelectorAll('.nameCheckbox:checked'))
+        .map(cb => cb.value);
+
+    if (selectedNames.length === 0) {
+        alert("Please select a name to edit the skillset.");
+        return;
+    }
+
+    selectedNames.forEach(name => {
+        let currentSkillset = personnel[name] || "";
+        let newSkillset = prompt(`Edit skillset for ${name}:`, currentSkillset);
+
+        if (newSkillset !== null) {
+            personnel[name] = newSkillset.trim();
+        }
+    });
+
+    // Save updated data to localStorage
+    localStorage.setItem("personnel", JSON.stringify(personnel));
+
+    alert("Skillsets updated successfully!");
+}
 
     function toggleSelectAll() {
       let checkboxes = document.querySelectorAll('.nameCheckbox');
