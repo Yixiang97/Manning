@@ -1,0 +1,204 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Data Display with Hidden Skillsets</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    main {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .list-container {
+      width: 90%;
+      max-width: 600px;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
+
+    #nameList {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .name-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      cursor: pointer;
+      gap: 10px;
+    }
+
+    .name-item:last-child {
+      border-bottom: none;
+    }
+
+    .name-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .name-item input[type="checkbox"] {
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Interactive Data Display with Hidden Skillsets</h1>
+  </header>
+
+  <main>
+    <h2>Select Names</h2>
+    <div id="controls">
+      <button onclick="toggleSelectAll()">Select All</button>
+      <button onclick="toggleEdit()">Edit</button>
+      <button onclick="navigateToAdd()">Add</button>
+    </div>
+
+    <div class="list-container">
+      <ul id="nameList"></ul>
+    </div>
+
+    <button onclick="proceedToSummary()">GO</button>
+  </main>
+
+  <script>
+    let personnel = {
+       "LONG JIEH LIANG": "Pillion, OC, PO, AST",
+  "MUHAMAD RIZAL BIN RIDWAN": "DOC, PO, AST",
+  "RAYMOND NG TECK MIN": "CL Package, Taser, PO, AST",
+  "NOOR HALEEM BIN MOHD HANIFA": "CL Package, Rider, Pillion, PO, AST",
+  "LOI ENG HAU": "CL Package, HK69, PAVA, TAV Driver, Van Driver, Taser, PO, AST",
+  "MUHAMMAD AMLI BIN MOHAMAD ALI": "CL Package, Rider, Pillion, PO, AST",
+  "AHMAD ANAS BIN MOHD MOHAIYUDDIN": "CL Package, Taser, PO, AST",
+  "CLARENCE CHIEW WEI CHONG": "CL Package, Rider, Pillion, PO, AST",
+  "MUHAMMAD RIZUAN BIN MOHIDIN": "CL Package, HK69, PAVA, TAV Driver, Pillion, Van Driver, PO, AST",
+  "MUHAMMAD KHAIRUL ANUAR BIN ABDUL RAHMAN": "CL Package, PAVA, TAV Driver, Rider, Pillion, Van Driver, PO, AST",
+  "CHAI WEE YEONG": "Marking, PO, AST",
+  "MUHAMMAD SYAFIQ BIN SULAIMAN": "CL Package, HK69, PAVA, Van Driver, Taser, PO, AST",
+  "LIM JIAN DA": "HK69, PAVA, PO MOE, TAV Driver, AST MOE, Taser, Van Driver, PO, AST",
+  "MUHAMMAD LUQMAN NUL HAKIM": "CL Package, HK69, PAVA, PO MOE, TAV Driver, AST MOE, Van Driver, SharpShooter, PO, AST",
+  "MARCUS WONG LIANG WEI": "PAVA, Rider, Pillion, SharpShooter, PO, AST",
+  "MUHAMMAD SHAZWANDI BIN SURIMAN": "CL Package, HK69, PAVA, PO MOE, AST MOE, Van Driver, SharpShooter, PO, AST",
+  "ABDULLAH KHAN BIN MOHAMED MURTUJAH": "Marking, PO MOE, AST MOE, Taser, Van Driver, SharpShooter, PO, AST",
+  "MUHAMMAD HAIKAL BIN RAMLAN": "HK69, PAVA, TAV Driver, Van Driver, SharpShooter, PO, AST",
+  "MOHAMAD SOLIHIN BIN MOHAMAD YUSRI": "Marking, TAV Driver, Rider, Pillion, AST MOE, Van Driver, PO, AST",
+  "MUHAMMAD HAZIQ BIN JASMAN": "PAVA, TAV Driver, Rider, Pillion, Van Driver, PO, AST",
+  "MUHAMMAD NURHADI BIN RAMLEE": "Marking, Rider, Pillion, AST MOE, PO, AST",
+  "MOHAMAD ILYAS BIN MOHAMAD ZAIDI": "Marking, PO MOE, TAV Driver, AST MOE, Van Driver, PO, AST",
+  "SNG XIANG MING": "TAV Driver, Van Driver, PO, AST",
+  "NG JIA SHENG": "Marking, TAV Driver, Van Driver, PO, AST",
+  "ARIF ABDULLAH BIN ROSLAN": "Marking, PO MOE, TAV Driver, Rider, Pillion, Van Driver, PO, AST",
+  "LIM WEI LIANG": "Marking, Pillion, AST MOE, PO, AST",
+  "R THAMIL MAGAN": "Marking, TAV Driver, AST MOE, Van Driver, PO, AST",
+  "MUHAMMAD ADLIFIKRI BIN ADANAN": "Marking, PO MOE, AST MOE, SharpShooter, PO, AST",
+  "MOHAMMAD DANIAL BIN NOORALAM": "Marking, Rider, Pillion, AST MOE, Van Driver, PO, AST",
+  "LEE YI XIANG": "Marking, Pillion, AST MOE, Van Driver, PO, AST",
+  "SIM JUN TING": "Marking, AST MOE, Van Driver, PO, AST",
+  "MUHAMMAD SYAFIYUDDIN BIN YUSRAN": "Rider, Pillion, AST MOE, PO, AST",
+  "MOHAMMAD ARIFIN BIN MOHAMED SALLEH": "Marking, TAV Driver, Rider, Pillion, PO, AST",
+  "ADIB AFHAN BIN MOHAMAD SUHAIMI": " PO, AST",
+  "MOHAMED HAFIS MARICAN BIN ASANA MARICAN": "Marking, AST MOE, PO, AST",
+  "MOHAMAD ILHAM ZIKRY BIN MOHAMAD ISKANDAR": "PO, AST",
+  "GOH ZHI PENG": "",
+  "MUHAMMED SHAFIQ BIN NAINAM": "PO",
+  "MUHAMMAD AQASHA BIN SYED THAHAR": "PO, AST",
+  "ZIKRI IEZZAT BIN ZAKIR MOHAMMED": "PO, AST",
+  "MUHAMMAD AQASYA BIN YUSNIZAM": "PO, AST",
+  "MUHAMMAD SYAFIQ BIN RUDYWAN": "PO, AST",
+  "MUHAMMAD ZAIYANI HIDIR BIN ZAINAL": "PO",
+  "DAIYAN BIN EDDIE": "PO",
+  "JUSTUS HUAN REN JIE": "PO",
+  "DAYAN TAN JIE AN": "PO"
+    };
+
+    function toggleSelectAll() {
+      let allChecked = document.querySelectorAll('.nameCheckbox:not(:checked)').length === 0;
+      document.querySelectorAll('.nameCheckbox').forEach(checkbox => checkbox.checked = !allChecked);
+    }
+
+    function proceedToSummary() {
+      let selectedNames = Array.from(document.querySelectorAll('.nameCheckbox:checked'))
+        .map(cb => cb.value);
+      localStorage.setItem('selectedPersonnel', JSON.stringify(selectedNames));
+      window.location.href = 'summary.html';
+    }
+
+    function populateNameList() {
+      let nameListDiv = document.getElementById('nameList');
+      nameListDiv.innerHTML = Object.entries(personnel).map(([name, skillset]) => `
+        <li class="name-item" onclick="toggleCheckbox('${name}')">
+          <input type="checkbox" id="checkbox-${name}" value="${name}" class="nameCheckbox" />
+          <span>${name}</span>
+        </li>
+      `).join('');
+    }
+
+    function toggleCheckbox(name) {
+      let checkbox = document.getElementById(`checkbox-${name}`);
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+      }
+    }
+
+    window.onload = populateNameList;
+  </script>
+</body>
+</html>
