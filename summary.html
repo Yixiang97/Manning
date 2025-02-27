@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary Report</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Dark Mode Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        
+        main {
+            background: #1E1E1E;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1, h2 {
+            color: #FFFFFF;
+        }
+
+        .summary-container, .leave-summary {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .skillset-list {
+            margin-top: 10px;
+        }
+
+        .divider {
+            border-top: 2px solid #444;
+            margin: 15px 0;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn {
+            background-color: #007BFF;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <h1>Summary Report</h1>
+        <h2 id="selectedDate"></h2>
+
+        <div class="summary-container">
+            <p><strong>Total Strength:</strong> <span id="totalStrength"></span></p>
+            <p><strong>On Leave:</strong> <span id="leaveStrength"></span></p>
+            <p><strong>Available for Duty:</strong> <span id="availableStrength"></span></p>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Strength Breakdown</h2>
+        <div class="summary-container">
+            <p><strong>Total PO Strength:</strong> <span id="totalPO"></span></p>
+            <p><strong>Total AST Strength:</strong> <span id="totalAST"></span></p>
+            <p><strong>EM Strength:</strong> <span id="emStrength"></span></p>
+            <p><strong>PO Strength:</strong> <span id="poStrength"></span></p>
+            <p><strong>AST Strength:</strong> <span id="astStrength"></span></p>
+            <p><strong>Non-AST Strength:</strong> <span id="nonAstStrength"></span></p>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Skillsets Available:</h2>
+        <div class="skillset-list" id="skillsetSummary"></div>
+
+        <div class="divider"></div>
+
+        <h2>Leave Summary:</h2>
+        <div class="leave-summary" id="leaveSummary"></div>
+
+        <div class="divider"></div>
+
+        <button class="back-btn" onclick="goBack()">Back to Selection</button>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let selectedNames = JSON.parse(localStorage.getItem('selectedPersonnel')) || [];
+            let personnelData = JSON.parse(localStorage.getItem('personnel')) || {};
+            let selectedDate = localStorage.getItem('selectedDate') || "No date selected";
+            let leaveEntries = JSON.parse(localStorage.getItem('leaveEntries')) || [];
+
+            document.getElementById("selectedDate").textContent = "Date: " + selectedDate;
+            document.getElementById("totalStrength").textContent = Object.keys(personnelData).length;
+            document.getElementById("emStrength").textContent = selectedNames.length;
+
+            let poCount = 0, astCount = 0, nonAstCount = 0;
+            let skillsetMap = {};
+
+            selectedNames.forEach(name => {
+                let skillset = personnelData[name] ? personnelData[name].split(", ") : [];
+                if (skillset.includes("PO")) poCount++;
+                if (skillset.includes("AST")) astCount++;
+                if (!skillset.includes("AST")) nonAstCount++;
+
+                skillset.forEach(skill => {
+                    if (!skillsetMap[skill]) {
+                        skillsetMap[skill] = [];
+                    }
+                    skillsetMap[skill].push(name);
+                });
+            });
+
+            document.getElementById("totalPO").textContent = poCount;
+            document.getElementById("poStrength").textContent = poCount;
+            document.getElementById("totalAST").textContent = astCount;
+            document.getElementById("astStrength").textContent = astCount;
+            document.getElementById("nonAstStrength").textContent = nonAstCount;
+
+            // Display skillsets
+            let skillsetSummaryDiv = document.getElementById("skillsetSummary");
+            skillsetSummaryDiv.innerHTML = "";
+            Object.keys(skillsetMap).forEach(skill => {
+                let skillEntry = document.createElement("p");
+                skillEntry.innerHTML = `<strong>${skill} (${skillsetMap[skill].length}):</strong> ${skillsetMap[skill].join(", ")}`;
+                skillsetSummaryDiv.appendChild(skillEntry);
+            });
+
+            // Leave Summary
+            let leaveSummaryDiv = document.getElementById("leaveSummary");
+            leaveSummaryDiv.innerHTML = "";
+            let leaveStrength = leaveEntries.length;
+            let availableStrength = Object.keys(personnelData).length - leaveStrength;
+            
+            document.getElementById("leaveStrength").textContent = leaveStrength;
+            document.getElementById("availableStrength").textContent = availableStrength;
+
+            if (leaveEntries.length > 0) {
+                leaveEntries.forEach(entry => {
+                    let leaveEntry = document.createElement("p");
+                    let reasonText = entry.type === "others" ? ` (${entry.reason})` : "";
+                    leaveEntry.innerHTML = `<strong>${entry.name}:</strong> ${entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}${reasonText}`;
+                    leaveSummaryDiv.appendChild(leaveEntry);
+                });
+            } else {
+                leaveSummaryDiv.innerHTML = "<p>No personnel on leave.</p>";
+            }
+        });
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
