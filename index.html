@@ -339,7 +339,8 @@ function proceedToSummary() {
     // Get selected date
     let selectedDate = document.getElementById("datePicker").value;
 
-    // Store in localStorage
+    // Ensure `personnel` data is saved before navigating to summary.html
+    localStorage.setItem("personnel", JSON.stringify(personnel));
     localStorage.setItem("selectedPersonnel", JSON.stringify(selectedNames));
     localStorage.setItem("leaveEntries", JSON.stringify(leaveEntries));
     localStorage.setItem("selectedDate", selectedDate);
@@ -347,6 +348,7 @@ function proceedToSummary() {
     // Redirect to summary.html
     window.location.href = "summary.html";
 }
+
 
     window.onload = function () {
       let firstDropdown = document.querySelector(".leaveSelector");
