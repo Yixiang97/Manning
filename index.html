@@ -120,7 +120,7 @@
       margin-top: 10px;
     }
 
-    .go-btn {
+    .'go'-btn {
       background-color: #007BFF;
     }
 
@@ -165,6 +165,7 @@
     <div class="controls">
       <button onclick="toggleSelectAll()">Select All</button>
       <button class="go-btn" onclick="proceedToSummary()">GO</button>
+
     </div>
 
   </div>
@@ -300,6 +301,28 @@
       let allChecked = [...checkboxes].every(cb => cb.checked);
       checkboxes.forEach(cb => cb.checked = !allChecked);
     }
+function proceedToSummary() {
+    let selectedNames = Array.from(document.querySelectorAll('.nameCheckbox:checked'))
+        .map(cb => cb.value);
+
+    let leaveEntries = Array.from(document.querySelectorAll('.dropdown-container')).map(entry => {
+        let name = entry.querySelector(".leaveSelector").value;
+        let type = entry.querySelector(".leaveType").value;
+        let reason = type === "others" ? entry.querySelector(".other-reason").value : "";
+        return { name, type, reason };
+    });
+
+    // Get selected date
+    let selectedDate = document.getElementById("datePicker").value;
+
+    // Store in localStorage
+    localStorage.setItem("selectedPersonnel", JSON.stringify(selectedNames));
+    localStorage.setItem("leaveEntries", JSON.stringify(leaveEntries));
+    localStorage.setItem("selectedDate", selectedDate);
+
+    // Redirect to summary.html
+    window.location.href = "summary.html";
+}
 
     window.onload = function () {
       let firstDropdown = document.querySelector(".leaveSelector");
