@@ -73,10 +73,14 @@
       display: none;
     }
 
-    #availableCount {
-      font-weight: bold;
-      color: #4CAF50;
-    }
+#availableCount {
+  white-space: pre-wrap;
+  text-align: left;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
   </style>
 </head>
 <body>
@@ -102,7 +106,11 @@
     </div>
 
     <div class="list-container">
-      <p>Available Personnel: <span id="availableCount"></span></p>
+    <p>
+  Available Personnel: <br>
+  <span id="availableCount" style="white-space:pre-wrap;"></span>
+</p>
+
     </div>
 
     <div class="controls">
@@ -204,8 +212,7 @@
       reasonInput.style.display = select.value === 'Others' ? 'block' : 'none';
     }
 
-    // Update available count
-    function updateLeaveList() {
+  function updateLeaveList() {
   const entries = Array.from(document.querySelectorAll('.leave-entry')).map(entry => ({
     name: entry.querySelector('.leaveInput').value.trim(),
     type: entry.querySelector('.leaveType').value,
@@ -213,16 +220,23 @@
   }));
 
   const totalNames = Object.keys(personnel);
-  const onLeaveNames = entries.filter(e => e.name && e.type !== 'Non-Ops').map(e => e.name);
-  const availableNames = totalNames.filter(name => !onLeaveNames.includes(name));
+  const onLeaveNames = entries
+    .filter(e => e.name && e.type !== 'Non-Ops')
+    .map(e => e.name.toUpperCase().trim()); // match casing
 
-  // Display available count + names
+  const availableNames = totalNames.filter(name => !onLeaveNames.includes(name.toUpperCase().trim()));
+
+  // Format names as bullet list
+  const formattedList = availableNames.map(name => `• ${name}`).join('\n');
+
+  // Update count and name list
   const availableContainer = document.getElementById("availableCount");
-  availableContainer.innerHTML = `${availableNames.length}<br><small>${availableNames.join(", ")}</small>`;
+  availableContainer.innerText = `Total: ${availableNames.length}\n\n${formattedList}`;
 
   // Save to localStorage
   localStorage.setItem("leaveEntries", JSON.stringify(entries));
 }
+
 
     // Date change handler
     document.getElementById("datePicker").addEventListener('change', function() {
