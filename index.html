@@ -206,19 +206,23 @@
 
     // Update available count
     function updateLeaveList() {
-      const entries = Array.from(document.querySelectorAll('.leave-entry')).map(entry => ({
-        name: entry.querySelector('.leaveInput').value.trim(),
-        type: entry.querySelector('.leaveType').value,
-        reason: entry.querySelector('.other-reason')?.value.trim() || ""
-      }));
+  const entries = Array.from(document.querySelectorAll('.leave-entry')).map(entry => ({
+    name: entry.querySelector('.leaveInput').value.trim(),
+    type: entry.querySelector('.leaveType').value,
+    reason: entry.querySelector('.other-reason')?.value.trim() || ""
+  }));
 
-      const total = Object.keys(personnel).length;
-      const onLeave = entries.filter(e => e.name && e.type !== 'Non-Ops').length;
-      document.getElementById("availableCount").textContent = total - onLeave;
+  const totalNames = Object.keys(personnel);
+  const onLeaveNames = entries.filter(e => e.name && e.type !== 'Non-Ops').map(e => e.name);
+  const availableNames = totalNames.filter(name => !onLeaveNames.includes(name));
 
-      // Save to localStorage
-      localStorage.setItem("leaveEntries", JSON.stringify(entries));
-    }
+  // Display available count + names
+  const availableContainer = document.getElementById("availableCount");
+  availableContainer.innerHTML = `${availableNames.length}<br><small>${availableNames.join(", ")}</small>`;
+
+  // Save to localStorage
+  localStorage.setItem("leaveEntries", JSON.stringify(entries));
+}
 
     // Date change handler
     document.getElementById("datePicker").addEventListener('change', function() {
